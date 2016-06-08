@@ -10,7 +10,7 @@ The goal of my project is to automatically identify the number of flies in a vid
 The methods I will use to do this are:
 * I will use the following python packages: deque, numpy, argparse, imutils, cv2
 
-I will use publicly available videos.
+I will use publicly available videos or my webcam.
 
 
 ## Methods
