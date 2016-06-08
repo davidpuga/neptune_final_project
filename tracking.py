@@ -14,7 +14,7 @@ import cv2
 
 
 ############## Arguments for the script ############
-ap = argparse.ArgumentParser()
+ap = argparse.ArgumentParser(description='Track an orange post-it quick and easy!')
 ap.add_argument("-v", "--video",
 	help="path to the (optional) video file") # 1st argument: this wil be the path to the video file. If left empty it will use the webcam.
 ap.add_argument("-b", "--buffer", type=int, default=32,
