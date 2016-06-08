@@ -2,27 +2,38 @@
 
 # remember to add this file or this folder to a directory that's available to bin!
 
-from collections import deque # deque is a package that creates list-like structures with versatile append functions
+
+############## Packages to be used ############
+from collections import deque # deque is a module that creates list-like structures with versatile append functions
 import numpy as np
-import argparse
+import argparse # is a module to help manage the arguments for the command-line
 import imutils
 import cv2
+###############################################
 
+
+
+############## Arguments for the script ############
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video",
-	help="path to the (optional) video file") # 1st argument: this wil be the path to the video file
+	help="path to the (optional) video file") # 1st argument: this wil be the path to the video file. If left empty it will use the webcam.
 ap.add_argument("-b", "--buffer", type=int, default=32,
 	help="max buffer size") # 2nd argument:  will control the maximum size of the deque points (i.e. the frames that will be tracked; the history of the tracking). Default to 32
-args = vars(ap.parse_args())
+args = vars(ap.parse_args()) 
+###############################################
 
 
-# define the lower and upper boundaries of the "yellow"
-# post-it in the HSV color space, then initialize the
-# list of tracked points
-orangeLower = (10, 59, 74)
+
+
+
+orangeLower = (10, 59, 74) # will define the lower boundary in HSV color space of the orange post-it.
 orangeUpper = (31, 100, 61)
-pts = deque(maxlen=args["buffer"])
+pts = deque(maxlen=args["buffer"]) # pts will be a deque structure whose maximum length will be defined by the second argument of the script (i.e. the buffer)
  
+
+
+
+
 # if a video path was not supplied, grab the reference
 # to the webcam
 if not args.get("video", False):
