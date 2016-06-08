@@ -1,16 +1,16 @@
 # Neptune Computational Biology - Final Project
 
 
-# Tracking an object
+# Tracking post its
 
 ## Introduction and Goals
 
-The goal of my project is to automatically identify the number of flies in a video and estimate their speed.
+The goal of my project is to automatically identify the post-its on my webcam and track them.
 
 The methods I will use to do this are:
 * I will use the following python packages: deque, numpy, argparse, imutils, cv2
 
-I will use publicly available videos or my webcam.
+I will use my webcam.
 
 
 ## Methods
