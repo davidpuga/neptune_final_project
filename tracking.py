@@ -22,12 +22,12 @@ ap.add_argument("-b", "--buffer", type=int, default=32,
 args = vars(ap.parse_args()) 
 ###############################################
 
+# v1_min, v1_max, v2_min, v2_max, v3_min, v3_max = 0, 21, 90, 171, 162, 255
 
 
 
-
-orangeLower = (10, 59, 74) # will define the lower boundary in HSV color space of the orange post-it.
-orangeUpper = (31, 100, 61)
+orangeLower = (0, 90, 162) # will define the lower boundary in HSV color space of the orange post-it.
+orangeUpper = (21, 171, 255)
 pts = deque(maxlen=args["buffer"]) # pts will be a deque structure whose maximum length will be defined by the second argument of the script (i.e. the buffer)
  
 
