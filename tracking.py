@@ -41,10 +41,16 @@ pts = deque(maxlen=args["buffer"]) # pts will be a deque structure whose maximum
 # to the webcam
 if not args.get("video", False):
 	camera = cv2.VideoCapture(0)
- 
 # otherwise, grab a reference to the video file
 else:
 	camera = cv2.VideoCapture(args["video"])
+
+
+
+
+
+
+
 
 
 # keep looping
@@ -67,11 +73,7 @@ while True:
 	mask = cv2.erode(mask, None, iterations=2)
 	mask = cv2.dilate(mask, None, iterations=2) #dilate and erode to get rid of small defects in the mask
 
-
-
-	# (x, y) center of the ball
-	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-		cv2.CHAIN_APPROX_SIMPLE)[-2] # cnts is the ensemble of countours that are in the mask (the objects with defined contours that are orange). RETR_EXTERNAL will outline only the external contour. CHAIN_APPROX_SIMPLE will draw the contour with the least number of points.
+	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2] # cnts is the ensemble of countours that are in the mask (the objects with defined contours that are orange). RETR_EXTERNAL will outline only the external contour. CHAIN_APPROX_SIMPLE will draw the contour with the least number of points.
 	center = None
  
 	
@@ -89,11 +91,7 @@ while True:
 			cv2.rectangle(frame, (int(x), int(y)), (x+w,y+h), (0, 255, 0), 3) # 1st arg: image, 2nd: upper-left corner, 3rd: lower-right, 4th: color, 5th: thickness
 			cv2.rectangle(frame, center, center, (0, 255, 0), -1)
  
-	# update the points queue
-	pts.appendleft(center)
-
-
-
+	pts.appendleft(center) # as center (centroid) moves, it will create a list by adding each new point. By default, the buffer is 32, so there will be 32 points in total. If I append to the right, the centroid will always have 1 as I move along and 31 will be added and then that point will dissapear. If I append to the left, the centroid will always have 32 points which will progressively dissapear in the tail. So for visualizing, it's better to append to the left, so we have a big point at the centroid, and the tail becomes thinner.
 
 		# loop over the set of tracked points
 	for i in xrange(1, len(pts)):
@@ -104,12 +102,14 @@ while True:
  
 		# otherwise, compute the thickness of the line and
 		# draw the connecting lines
+		color = np.random.randint(0,255,3) # creates random integers. 1st: lowest number, 2nd: highest, 3rd: size of the array
 		thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
-		cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
+		cv2.line(frame, pts[i - 1], pts[i], color, thickness)
  
 	# show the frame to our screen
 	cv2.imshow("Frame", frame)
 	cv2.imshow("Mask", mask)
+	cv2.moveWindow("Mask",700,110)
 
 	key = cv2.waitKey(1) & 0xFF
  
@@ -117,6 +117,11 @@ while True:
 	if key == ord("q"):
 		break
  
+
+
+
+
+
 # cleanup the camera and close any open windows
 camera.release()
 cv2.destroyAllWindows()
