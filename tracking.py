@@ -19,7 +19,11 @@ ap.add_argument("-v", "--video",
 	help="path to the (optional) video file") # 1st argument: this wil be the path to the video file. If left empty it will use the webcam.
 ap.add_argument("-b", "--buffer", type=int, default=32,
 	help="max buffer size") # 2nd argument:  will control the maximum size of the deque points (i.e. the frames that will be tracked; the history of the tracking). Default to 32
+ap.add_argument("-p", "--poem", action="store_true",
+	help="nice poem")
 args = vars(ap.parse_args()) 
+if args.poem:
+    print("\n\nWir sind durch Not und Freude\ngegangen Hand in Hand;\nvom Wandern ruhen wir beide\nnun ueberm stillen Land.\n\nRings sich die Taeler neigen,\nes dunkelt schon die Luft.\nZwei Lerchen nur noch steigen\nnachtraeumend in den Duft.\n\nTritt her und lass sie schwirren,\nbald ist es Schlafenszeit.\nDass wir uns nicht verirren\nin dieser Einsamkeit.\n\nO weiter, stiller Friede!\nSo tief im Abendrot.\nWie sind wir wandermuede--\nIst dies etwa der Tod?\n\nJoseph von Eichendorff\n\n")
 ###############################################
 
 # v1_min, v1_max, v2_min, v2_max, v3_min, v3_max = 0, 21, 90, 171, 162, 255
@@ -30,8 +34,6 @@ orangeLower = (0, 90, 162) # will define the lower boundary in HSV color space o
 orangeUpper = (21, 171, 255)
 pts = deque(maxlen=args["buffer"]) # pts will be a deque structure whose maximum length will be defined by the second argument of the script (i.e. the buffer)
  
-
-
 
 
 # if a video path was not supplied, grab the reference
