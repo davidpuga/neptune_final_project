@@ -9,6 +9,7 @@ The goal of my project is to automatically identify the post-its on my webcam an
 
 The methods I will use to do this are:
 * I will use the following python packages: deque, numpy, argparse, imutils, cv2
+* The scripts [range-detector](https://github.com/jrosebr1/imutils/blob/master/bin/range-detector) to obtain the HSV ranges for the orange post-it.
 
 I will use my webcam.
 
