@@ -19,19 +19,20 @@ ap.add_argument("-v", "--video",
 	help="path to the (optional) video file") # 1st argument: this wil be the path to the video file. If left empty it will use the webcam.
 ap.add_argument("-b", "--buffer", type=int, default=32,
 	help="max buffer size") # 2nd argument:  will control the maximum size of the deque points (i.e. the frames that will be tracked; the history of the tracking). Default to 32
-ap.add_argument("-p", "--poem", action="store_true",
-	help="nice poem")
+#ap.add_argument("-p", "--poem", action="store_true",
+#	help="nice poem") # doesn't work right now
 args = vars(ap.parse_args()) 
-if args.poem:
-    print("\n\nWir sind durch Not und Freude\ngegangen Hand in Hand;\nvom Wandern ruhen wir beide\nnun ueberm stillen Land.\n\nRings sich die Taeler neigen,\nes dunkelt schon die Luft.\nZwei Lerchen nur noch steigen\nnachtraeumend in den Duft.\n\nTritt her und lass sie schwirren,\nbald ist es Schlafenszeit.\nDass wir uns nicht verirren\nin dieser Einsamkeit.\n\nO weiter, stiller Friede!\nSo tief im Abendrot.\nWie sind wir wandermuede--\nIst dies etwa der Tod?\n\nJoseph von Eichendorff\n\n")
+#if args.poem: #doesn't work as it is because poem is not part of the dictionary. If I delete vars then the poem works but not the rest.
+#    print("\n\nWir sind durch Not und Freude\ngegangen Hand in Hand;\nvom Wandern ruhen wir beide\nnun ueberm stillen Land.\n\nRings sich die Taeler neigen,\nes dunkelt schon die Luft.\nZwei Lerchen nur noch steigen\nnachtraeumend in den Duft.\n\nTritt her und lass sie schwirren,\nbald ist es Schlafenszeit.\nDass wir uns nicht verirren\nin dieser Einsamkeit.\n\nO weiter, stiller Friede!\nSo tief im Abendrot.\nWie sind wir wandermuede--\nIst dies etwa der Tod?\n\nJoseph von Eichendorff\n\n")
 ###############################################
 
-# v1_min, v1_max, v2_min, v2_max, v3_min, v3_max = 0, 21, 90, 171, 162, 255
+# v1_min, v1_max, v2_min, v2_max, v3_min, v3_max = 0, 21, 90, 171, 162, 255 works fine but not perfect
+# (0, 15, 124, 255, 113, 255) works much better
 
 
 
-orangeLower = (0, 90, 162) # will define the lower boundary in HSV color space of the orange post-it.
-orangeUpper = (21, 171, 255)
+orangeLower = (0, 124, 113) # will define the lower boundary in HSV color space of the orange post-it.
+orangeUpper = (15, 255, 255)
 pts = deque(maxlen=args["buffer"]) # pts will be a deque structure whose maximum length will be defined by the second argument of the script (i.e. the buffer)
  
 
@@ -56,32 +57,29 @@ while True:
 	if args.get("video") and not grabbed:
 		break
  
-	# resize the frame, blur it, and convert it to the HSV
-	# color space
-	frame = imutils.resize(frame, width=600)
-	# blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+	frame = imutils.resize(frame, width=600) # to make the video smaller and easier to analyse
+	blurred = cv2.GaussianBlur(frame, (11, 11), 0) # to blur image and wipe out any high frequency noise
+	hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) # change video to HSV color space (used to choose the lower- and upperOrange)
  
-	# construct a mask for the color "orange", then perform
-	# a series of dilations and erosions to remove any small
-	# blobs left in the mask
-	mask = cv2.inRange(hsv, orangeLower, orangeUpper)
+	
+	mask = cv2.inRange(hsv, orangeLower, orangeUpper) # it will create a mask for every object in that falls into the HSV range defined
 	mask = cv2.erode(mask, None, iterations=2)
-	mask = cv2.dilate(mask, None, iterations=2)
+	mask = cv2.dilate(mask, None, iterations=2) #dilate and erode to get rid of small defects in the mask
 
 
-	# find contours in the mask and initialize the current
+
 	# (x, y) center of the ball
 	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-		cv2.CHAIN_APPROX_SIMPLE)[-2]
+		cv2.CHAIN_APPROX_SIMPLE)[-2] # cnts is the ensemble of countours that are in the mask (the objects with defined contours that are orange). RETR_EXTERNAL will outline only the external contour. CHAIN_APPROX_SIMPLE will draw the contour with the least number of points.
 	center = None
  
-	# only proceed if at least one contour was found
-	if len(cnts) > 0:
+	
+	if len(cnts) > 0: # len(list) is the number of items in list. It will proceed only if at least one (orange object) was found.
 		# find the largest contour in the mask, then use
 		# it to compute the minimum enclosing circle and
 		# centroid
-		c = max(cnts, key=cv2.contourArea)
+		c = max(cnts, key=cv2.contourArea) # max will look in cnts and find the largest object as defined by their contour area
 		((x, y), radius) = cv2.minEnclosingCircle(c)
 		M = cv2.moments(c)
 		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
@@ -114,6 +112,8 @@ while True:
  
 	# show the frame to our screen
 	cv2.imshow("Frame", frame)
+	cv2.imshow("Mask", mask)
+
 	key = cv2.waitKey(1) & 0xFF
  
 	# if the 'q' key is pressed, stop the loop
