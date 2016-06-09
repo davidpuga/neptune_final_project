@@ -76,21 +76,18 @@ while True:
  
 	
 	if len(cnts) > 0: # len(list) is the number of items in list. It will proceed only if at least one (orange object) was found.
-		# find the largest contour in the mask, then use
-		# it to compute the minimum enclosing circle and
-		# centroid
+
 		c = max(cnts, key=cv2.contourArea) # max will look in cnts and find the largest object as defined by their contour area
-		((x, y), radius) = cv2.minEnclosingCircle(c)
-		M = cv2.moments(c)
+		(x, y, w, h) = cv2.boundingRect(c) # of the largest object, it computes the 
+		M = cv2.moments(c) 
 		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
  
-		# only proceed if the radius meets a minimum size
-		if radius > 10:
-			# draw the circle and centroid on the frame,
+		# only proceed if the width meets a minimum size
+		if w > 10:
+			# draw the rectangle and centroid on the frame,
 			# then update the list of tracked points
-			cv2.circle(frame, (int(x), int(y)), int(radius),
-				(0, 255, 255), 2)
-			cv2.circle(frame, center, 5, (0, 0, 255), -1)
+			cv2.rectangle(frame, (int(x), int(y)), (x+w,y+h), (0, 255, 0), 3) # 1st arg: image, 2nd: upper-left corner, 3rd: lower-right, 4th: color, 5th: thickness
+			cv2.rectangle(frame, center, center, (0, 255, 0), -1)
  
 	# update the points queue
 	pts.appendleft(center)
